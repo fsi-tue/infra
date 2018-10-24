@@ -1,0 +1,8 @@
+Host *.fsi.uni-tuebingen.de *.fs-psycho.uni-tuebingen.de *.klimagarten.uni-tuebingen.de
+  UserKnownHostsFile ~/.ssh/fsi_hosts # TODO: Copy the file from this repo
+  StrictHostKeyChecking yes
+  CheckHostIP no
+  #User <YourUsername> # TODO: Set your username
+  # TODO: Generate a key, e.g.:
+  # $ ssh-keygen -t rsa -b 4096 -C <Comment/Email> -f ~/.ssh/id_fsi
+  #IdentityFile ~/.ssh/id_fsi
