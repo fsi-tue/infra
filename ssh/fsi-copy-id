@@ -1,0 +1,111 @@
+#!/usr/bin/env expect
+
+# Author: Michael Weiss
+# License: Unlicense (https://unlicense.org/UNLICENSE)
+# Note: Using Python would've probably been a better idea...
+
+proc printHelp {} {
+  send_user "Usage:\n"
+  send_user "\tfsi-copy-id FILE\n"
+  send_user "\t\tWhere FILE is your SSH public key file.\n"
+  send_user "\tfsi-copy-id -h\n"
+  send_user "\tfsi-copy-id --help\n"
+  send_user "\t\tPrint this help.\n"
+  exit 0
+}
+
+proc parseArguments {} {
+  global argc
+  if { $argc != 1 } {
+    send_error "Error: Wrong usage.\n"
+    send_error "Try 'fsi-copy-id --help' for more information.\n"
+    exit 1
+  }
+  global argv
+  if { [lindex $argv 0] == "-h" || [lindex $argv 0] == "--help" } {
+    printHelp
+  }
+  set fileName [lindex $argv 0]
+  if { [file isfile $fileName] == 0 } {
+    send_error "Error: The file $fileName doesn't exist.\n"
+    exit 1
+  }
+  return $fileName
+}
+
+proc getSshUser {} {
+  send_user "Please enter your SSH username: "
+  expect_user -re "(.*)\n"
+  set user $expect_out(1,string)
+  return $user
+}
+
+proc getSshPassword {} {
+  stty -echo
+  send_user "Please enter your SSH password: "
+  expect_user -re "(.*)\n"
+  set password $expect_out(1,string)
+  send_user "\n"
+  stty echo
+  return $password
+}
+
+# Parse the arguments and try to get the identity file
+set identityFile [parseArguments]
+
+# Request the SSH user
+set user [getSshUser]
+# Request the SSH password
+set password [getSshPassword]
+
+set hosts {"amy" "anja" "kim" "lara" "lea" "nina" "sessel" "sofa" "teri"}
+
+# Try to install the key
+set hostsSkipped 0
+set keysInstalled 0
+foreach host $hosts {
+  # "-n" for a dry-run
+  spawn "ssh-copy-id" "-i" "$identityFile" "-o" "StrictHostKeyChecking=yes" "$user@$host.fsi.uni-tuebingen.de"
+  expect {
+    "$user@$host.fsi.uni-tuebingen.de's password:" {send "$password\r"}
+    "ERROR: Host key verification failed." {
+      send_error "Please make sure that you follow our setup: "
+      send_error "https://www.fsi.uni-tuebingen.de/interna/admin-doku/ssh\n"
+      send_error "You must either use the UserKnownHostsFile option "
+      send_error "or have all host keys in your ~/.ssh/known_hosts\n"
+      exit 1
+    }
+    "WARNING: All keys were skipped because they already exist on the remote system." {
+      incr hostsSkipped; continue
+    }
+    timeout {
+      puts stderr "Error: Timeout."
+      exit 1
+    }
+    eof {
+      puts stderr "Error: Something unexpected happened."
+      exit 1
+    }
+  }
+  expect {
+    "Number of key(s) added:" {incr keysInstalled}
+    "Permission denied, please try again." {
+      puts stderr "Error: Wrong password."
+      exit 1
+    }
+    timeout {
+      puts stderr "Error: Timeout."
+      exit 1
+    }
+    eof {
+      puts stderr "Error: Something unexpected happened."
+      exit 1
+    }
+  }
+}
+
+# No error detected -> success
+send_user "Success:\n"
+send_user "  Total hosts: [llength $hosts]\n"
+send_user "  Installed key on $keysInstalled hosts.\n"
+send_user "  Key already installed on $hostsSkipped hosts.\n"
