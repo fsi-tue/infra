@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -eu
+
+# Synopsis: Runs a command on all fsi hosts
+# Author: Michael Weiss
+# License: Unlicense (https://unlicense.org/UNLICENSE)
+
+if [[ $# -eq 0 ]]; then
+  echo "Error: Wrong usage." >&2
+  echo "fsi-run-everywhere: cmd ..." >&2
+  exit 1
+fi
+
+## Optional hack to output the provided arguments in a format that can be reused as shell input:
+#printf -v SSH_COMMAND '%q ' "$@"
+## Note: ${parameter@Q} should also work.
+## TODO: Might make sense to read commands interactively.
+
+for host in "amy" "anja" "kim" "lara" "lea" "nina" "sessel" "sofa" "teri" "trinity"; do
+  echo "+ Host: $host"
+  ssh "$host.fsi.uni-tuebingen.de" "$@"
+done
