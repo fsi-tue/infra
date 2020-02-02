@@ -1,3 +1,12 @@
+Host git.fsi.uni-tuebingen.de
+  Port 222
+  User git
+  HostKeyAlgorithms ssh-rsa
+
+Host luna.fsi.uni-tuebingen.de
+  HostName proxy.fsi.uni-tuebingen.de
+  Port 50000
+
 Host *.fsi.uni-tuebingen.de *.fs-psycho.uni-tuebingen.de *.klimagarten.uni-tuebingen.de
   UserKnownHostsFile ~/.ssh/fsi_hosts # TODO: Copy the file from this repo
   StrictHostKeyChecking yes
