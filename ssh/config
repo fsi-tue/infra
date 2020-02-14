@@ -1,7 +1,7 @@
 Host git.fsi.uni-tuebingen.de
   Port 222
   User git
-  HostKeyAlgorithms ssh-rsa
+  HostKeyAlgorithms rsa-sha2-256
 
 Host luna.fsi.uni-tuebingen.de
   HostName proxy.fsi.uni-tuebingen.de
