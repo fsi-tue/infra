@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"strings"
 	"github.com/emersion/go-mbox"
 	"github.com/emersion/go-message/mail"
 	_ "github.com/emersion/go-message/charset"
@@ -47,34 +46,22 @@ func PrintAllMboxSenders(fileName string) {
 func PrintMessageSender(r io.Reader) {
 	mr, err := mail.CreateReader(r)
 	if err != nil {
-		if err.Error() == "charset \"cp-850\": ianaindex: invalid encoding name" {
-			fmt.Fprintf(os.Stderr, "Ignored a mail due to an invalid charset\n")
-			return // TODO: Print message ID
-		}
-		log.Fatal(err)
+		IgnoreMail(err, mr)
 	}
 
 	addr, err := mr.Header.AddressList("From")
 	if err != nil {
-		if strings.Contains(err.Error(), "invalid utf-8 in quoted-string") {
-			addr := strings.TrimPrefix(err.Error(), "mail: missing word in phrase: mail: invalid utf-8 in quoted-string: ")
-			fmt.Fprintf(os.Stderr, "Ignored due to invalid UTF-8 encoding: %v\n", addr)
-			return
-		} else if err.Error() == "mail: missing @ in addr-spec" {
-			fmt.Fprintf(os.Stderr, "Ignored a sender due to missing @\n")
-			return // TODO: Print invalid address
-		} else if err.Error() == "mail: no angle-addr" {
-			fmt.Fprintf(os.Stderr, "Ignored a mail due to no angle-address\n")
-			return // TODO: Print message ID
-		}
-		log.Fatal(err)
+		IgnoreMail(err, mr)
+		return
 	} else if len(addr) != 1 {
-		if len(addr) == 0 {
-			fmt.Fprintf(os.Stderr, "Ignored a mail due to a missing sender\n")
-			return // TODO: Print message ID
-		}
-		fmt.Fprintf(os.Stderr, "A mail has an unexpected number of senders: %v\n", len(addr))
-		return // TODO: Print message ID
+		IgnoreMail(fmt.Errorf("unexpected number of senders: %v", len(addr)), mr)
+		return
 	}
 	fmt.Println(addr[0].Address)
+}
+
+func IgnoreMail(err error, mailReader *mail.Reader) {
+	reason := err.Error()
+	id, _ := mailReader.Header.MessageID()
+	fmt.Fprintf(os.Stderr, "Warning: Ignored a mail with ID \"%v\" for the reason \"%v\".\n", id, reason)
 }
