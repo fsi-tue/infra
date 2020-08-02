@@ -1,0 +1,17 @@
+From herp.derp@example.com Thu Jan  1 00:00:01 2015
+From: herp.derp@example.com (Herp Derp)
+Date: Thu, 01 Jan 2015 00:00:01 +0100
+Subject: Test
+
+This is a simple test.
+
+CU.
+
+From derp.herp@example.com Thu Jan  1 00:00:01 2015
+From: derp.herp@example.com (Derp Herp)
+Date: Thu, 02 Jan 2015 00:00:01 +0100
+Subject: Another test
+
+This is another simple test.
+
+Bye.
