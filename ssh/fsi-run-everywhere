@@ -17,7 +17,7 @@ fi
 ## Note: ${parameter@Q} should also work.
 ## TODO: Might make sense to read commands interactively.
 
-for host in "amy" "anja" "kim" "lara" "lea" "nina" "sessel" "sofa" "teri" "trinity"; do
+for host in "amy" "anja" "kim" "lara" "nina" "sessel" "sofa" "teri" "trinity"; do
   echo "+ Host: $host"
   ssh "$host.fsi.uni-tuebingen.de" "$@"
 done
