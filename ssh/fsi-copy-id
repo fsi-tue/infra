@@ -58,7 +58,7 @@ set user [getSshUser]
 # Request the SSH password
 set password [getSshPassword]
 
-set hosts {"amy" "anja" "kim" "lara" "lea" "nina" "sessel" "sofa" "teri" "trinity"}
+set hosts {"amy" "anja" "kim" "lara" "nina" "sessel" "sofa" "teri" "trinity"}
 # Optional: luna
 
 # Try to install the key
