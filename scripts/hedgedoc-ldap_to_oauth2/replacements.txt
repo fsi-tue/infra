@@ -1,0 +1,4 @@
+UPDATE "Users" SET profileid = '$UID', profile = jsonb_set(profile::jsonb, '{id}', '"$UID"')  where profileid = '$LDAPID';
+UPDATE "Users" SET profile = profile::jsonb || jsonb_build_object('displayName', profile::json->'username') where profileid = '$UID';
+UPDATE "Users" SET profile = jsonb_set(profile::jsonb, '{username}', '"$UID"') where profileid = '$UID';
+UPDATE "Users" SET profile = jsonb_set(profile::jsonb, '{provider}', '"oauth2"') where profileid = '$UID';
