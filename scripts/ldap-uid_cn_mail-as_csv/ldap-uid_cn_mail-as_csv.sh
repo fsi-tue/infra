@@ -27,11 +27,11 @@ split -l 3 $RND_FOLDER/ldap.txt $RND_FOLDER/ldap.txt.chunk.
 ls $RND_FOLDER/ldap.txt.chunk.* | xargs -P 4 -I {} sort {} -o {}
 cat $RND_FOLDER/ldap.txt.chunk.* > $RND_FOLDER/ldap.txt.sorted
 
-	cat $RND_FOLDER/ldap.txt.sorted | \
-	# Split every 3 lines and make CSV file from data
-	xargs -n3 -d'\n' | \
-	sed 's/cn: //g; s/ mail: /,/g; s/ uid: /,/g' | \
-	# Quote columns with spaces correctly
-	sed 's/^/"/g; s/,/",/1' | sed 's/""/"/g' > ldapdata.csv
+cat $RND_FOLDER/ldap.txt.sorted | \
+# Split every 3 lines and make CSV file from data
+xargs -n3 -d'\n' | \
+sed 's/cn: //g; s/ mail: /,/g; s/ uid: /,/g' | \
+# Quote columns with spaces correctly
+sed 's/^/"/g; s/,/",/1' | sed 's/""/"/g' > ldapdata.csv
 
 rm -r $RND_FOLDER
