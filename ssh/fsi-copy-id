@@ -71,7 +71,7 @@ foreach host $hosts {
     "$user@$host.fsi.uni-tuebingen.de's password:" {send "$password\r"}
     "ERROR: Host key verification failed." {
       send_error "Please make sure that you follow our setup: "
-      send_error "https://www.fsi.uni-tuebingen.de/interna/admin-doku/ssh\n"
+      send_error "https://wiki.fsi.uni-tuebingen.de/interna/admin-doku/ssh\n"
       send_error "You must either use the UserKnownHostsFile option "
       send_error "or have all host keys in your ~/.ssh/known_hosts\n"
       exit 1
