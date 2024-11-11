@@ -15,13 +15,13 @@ TR=/usr/bin/tr
 SHA256SUM=/usr/bin/sha256sum
 
 echo "Fetching Github Actions IPs from Github API..."
-GITHUB_META=`${CURL} https://api.github.com/meta 2>/dev/null`
+GITHUB_META=$(${CURL} https://api.github.com/meta 2>/dev/null)
 
 # for debugging purposes (to not hit the rate limit)
 # IPS_DUMP="github_actions_ips_v4"
 # GITHUB_META=`cat ${IPS_DUMP}`
 
-ACTIONS_IPS=$(echo $GITHUB_META | ${JQ} '.actions[]' | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}' | sort)
+ACTIONS_IPS=$(echo "$GITHUB_META" | ${JQ} '.actions[]' | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}' | sort)
 
 # use two distinct chains so there is now downtime when updating the rules
 # one could iterate over the rules of the list, but it's quicker to just switch chains
@@ -50,7 +50,7 @@ fi
 
 echo "Adding IP addresses to new chain..."
 for ip in $ACTIONS_IPS; do
-	"${IPTABLES}" -I "${NEW_CHAIN}" -s $ip -p tcp --dport "${SSH_PORT}" -j ACCEPT
+	"${IPTABLES}" -I "${NEW_CHAIN}" -s "$ip" -p tcp --dport "${SSH_PORT}" -j ACCEPT
 done
 
 # not hitting any of the rules in the GH chain implies the last rule, so no dropping in INPUT needed
