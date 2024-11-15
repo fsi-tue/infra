@@ -4,8 +4,8 @@
 # Get the uid, cn and mail-address of all LDAP accounts that are not disabled
 
 
-RND_FOLDER=`openssl rand -hex 16`
-mkdir $RND_FOLDER
+RND_FOLDER=$(openssl rand -hex 16)
+mkdir "$RND_FOLDER"
 
 # See
 ## https://lurchi.wordpress.com/2009/11/03/ldapsearch-and-base64-encoding/
@@ -20,18 +20,18 @@ alias un64='awk '\''BEGIN{FS=":: ";c="base64 -d"}{if(/\w+:: /) {print $2 |& c; c
 ldapsearch -x "(&(objectclass=posixAccount)(!(loginShell=/usr/sbin/nologin)))" 2>/dev/null | \
 	egrep "^(mail:|uid:|cn:)" | \
 	un64 | \
-	sed 's/cn::/cn:/g' > $RND_FOLDER/ldap.txt
+	sed 's/cn::/cn:/g' > "$RND_FOLDER"/ldap.txt
 
 # Sort the data by cn, mail and uid
-split -l 3 $RND_FOLDER/ldap.txt $RND_FOLDER/ldap.txt.chunk.
-ls $RND_FOLDER/ldap.txt.chunk.* | xargs -P 4 -I {} sort {} -o {}
-cat $RND_FOLDER/ldap.txt.chunk.* > $RND_FOLDER/ldap.txt.sorted
+split -l 3 "$RND_FOLDER"/ldap.txt "$RND_FOLDER"/ldap.txt.chunk.
+ls "$RND_FOLDER"/ldap.txt.chunk.* | xargs -P 4 -I {} sort {} -o {}
+cat "$RND_FOLDER"/ldap.txt.chunk.* > "$RND_FOLDER"/ldap.txt.sorted
 
-cat $RND_FOLDER/ldap.txt.sorted | \
+cat "$RND_FOLDER"/ldap.txt.sorted | \
 # Split every 3 lines and make CSV file from data
 xargs -n3 -d'\n' | \
 sed 's/cn: //g; s/ mail: /,/g; s/ uid: /,/g' | \
 # Quote columns with spaces correctly
 sed 's/^/"/g; s/,/",/1' | sed 's/""/"/g' > ldapdata.csv
 
-rm -r $RND_FOLDER
+rm -r "$RND_FOLDER"
